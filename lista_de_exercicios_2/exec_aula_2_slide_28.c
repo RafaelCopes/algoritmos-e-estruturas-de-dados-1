@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Rafael Montagna Copes
+// 19100930
+
 // Eu programo eu inglês para o código poder
 // ser lido por todo mundo.
 
