@@ -21,25 +21,23 @@ int main() {
 }
 
 void insertionSort(int *data, int n) {
-    int i, j, tmp;
+    int i, j, key;
 
-    for (j = 0; j < n; j++) {
-        i = j - 1;
-        tmp = data[j];
+    for (i = 0; i < n; i++) {
+        key = data[i];
+        j = i - 1;
 
-        while ((i >= 0) && (tmp < data[i])) {
-            data[i+1] = data[i];
-            i--;
+        while ((j >= 0) && (key < data[j])) {
+            data[j + 1] = data[j];
+            j--;
         }
 
-        data[i+1] = tmp;        
+        data[j + 1] = key;
     }
 }
 
-void printArray(int arr[], int n) { 
-    int i; 
-
-    for (i = 0; i < n; i++) 
+void printArray(int *arr, int n) { 
+    for (int i = 0; i < n; i++) 
         printf("%d ", arr[i]);
 
     printf("\n"); 
