@@ -16,7 +16,6 @@ int main() {
     printf("Sorted: ");
     printArray(arr, n);
 
-
     return 0;
 }
 
