@@ -16,7 +16,6 @@ int isFull(struct Queue* queue);
 int isEmpty(struct Queue* queue);
 void printQueue(struct Queue* queue);
 
-
 int main() {
     struct Queue* queue = createQueue(10);
 
@@ -60,6 +59,7 @@ struct Queue* createQueue(unsigned capacity) {
 
 void enqueue(struct Queue* queue, int item) {
     if (isFull(queue)) {
+        printf("The queue is full!\n");
         return;
     }
 
@@ -72,6 +72,7 @@ void enqueue(struct Queue* queue, int item) {
 
 int dequeue(struct Queue* queue) {
     if (isEmpty(queue)) {
+        printf("The queue is already empty!\n");
         return -1;
     }
 

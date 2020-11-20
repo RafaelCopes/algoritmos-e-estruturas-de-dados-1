@@ -10,7 +10,7 @@ struct Stack {
 struct Stack* createStack(unsigned capacity);
 void push(struct Stack* stack, int item);
 int pop(struct Stack* stack);
-int top(struct Stack* stack);
+int peek(struct Stack* stack);
 int isEmpty(struct Stack* stack);
 int isFull(struct Stack* stack);
 void printStack(struct Stack* stack);
@@ -20,18 +20,24 @@ int main() {
 
     push(stack, 5);
     push(stack, 3);
-    push(stack, 9);
+    push(stack, 22);
+    push(stack, 4);    
+    push(stack, 36);
+    push(stack, 65);
 
     printStack(stack);
 
     push(stack, 2);
 
-    printf("%d is at the top of the stack\n", top(stack));
+    pop(stack);
+    pop(stack);
+
+    printf("%d is at the top of the stack\n", peek(stack));
 
     printStack(stack);
 
     printf("%d popped from stack\n", pop(stack));
-    printf("%d is at the top of the stack\n", top(stack));
+    printf("%d is at the top of the stack\n", peek(stack));
 
     printStack(stack);
 
@@ -58,6 +64,8 @@ int isEmpty(struct Stack* stack) {
 
 void push(struct Stack* stack, int item) {
     if (isFull(stack)) {
+        printf("The stack is full!\n");
+
         return;
     }
 
@@ -68,13 +76,15 @@ void push(struct Stack* stack, int item) {
 
 int pop(struct Stack* stack) {
     if (isEmpty(stack)) {
+        printf("The stack is already empty!\n");
+
         return -1;
     }
 
     return stack->array[stack->top--];
 };
 
-int top(struct Stack* stack) {
+int peek(struct Stack* stack) {
     if (isEmpty(stack)) {
         return -1;
     }

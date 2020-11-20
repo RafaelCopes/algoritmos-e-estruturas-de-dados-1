@@ -8,8 +8,8 @@ struct Node {
 
 void print(struct Node* n);
 void push(struct Node** head, int data);
-void insertAfter(struct Node* prevNode, int data);
 void append(struct Node** head, int data);
+void insertAfter(struct Node* prevNode, int data);
 void deleteNodeWith(struct Node** head, int key);
 void deleteNodeAt(struct Node** head, int position);
 void deleteList(struct Node** head);

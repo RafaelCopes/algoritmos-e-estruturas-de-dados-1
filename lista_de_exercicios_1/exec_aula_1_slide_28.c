@@ -12,12 +12,12 @@
 
 #define MAX_NAME_SIZE 20
 
-typedef struct {
+typedef struct _contact {
     char name[MAX_NAME_SIZE];
     long int number;
 } Contact;
 
-typedef struct {
+typedef struct _variables {
     int i;
     int j;
     int k;
