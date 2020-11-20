@@ -29,13 +29,13 @@ typedef struct _variables {
     int contactQuantity;
     int queueQuantity;
     int listQuantity;
+    int isPresent;
     char name[MAX_NAME_SIZE];
     long int number;
 } Variables;
 
 void addContact();
 void deleteContact();
-void listContacts();
 int contactNameExists(char *name);
 void orderedListing();
 DoublyLinkedListNode* newDoublyLinkedListNode(Contact *contact);
@@ -54,7 +54,7 @@ Variables *variables = NULL;
 DoublyLinkedListNode *listHead = NULL;
 
 int main() {
-    pBuffer = malloc(sizeof(Variables));
+    pBuffer = malloc(sizeof(Variables) + sizeof(DoublyLinkedListNode));
 
     if (pBuffer == NULL) {
         printf("Error in memory allocation!\n");
@@ -67,17 +67,17 @@ int main() {
     variables->contactQuantity = 0;
     variables->queueQuantity = 0;
     variables->listQuantity = 0;
+    variables->isPresent = 0;
     variables->op = 0;
 
-    while (variables->op != 6) {
+    while (variables->op != 5) {
 
         printf("Choose an option:\n\n");
         printf("1: Add Contact\n");
         printf("2: Remove Contact\n");
-        printf("3: List Contacts\n");
-        printf("4: Ordered Listing\n");
-        printf("5: Print Doubly Linked List\n");
-        printf("6: Exit\n\n");
+        printf("3: Ordered Listing\n");
+        printf("4: Print Doubly Linked List\n");
+        printf("5: Exit\n\n");
         printf("Option: ");
         scanf("%d", &variables->op);
 
@@ -88,10 +88,7 @@ int main() {
             case 2: 
                 deleteContact();
             break; 
-            case 3: 
-                listContacts();
-            break; 
-            case 4:
+            case 3:
                 printf("\nWhats the ordination parameter?\n\n");
                 printf("1: Alphabetically\n");
                 printf("2: By number\n\n");
@@ -100,10 +97,10 @@ int main() {
 
                 orderedListing();
             break; 
-            case 5: 
+            case 4: 
                 printLinkedList();
             break;  
-            case 6: 
+            case 5: 
                 printf("\nBye!\n\n");
             break; 
             default:
@@ -121,7 +118,7 @@ int contactNameExists(char *name) {
     DoublyLinkedListNode **tracer = &listHead;
 
     while(*tracer) {
-        if (strcasecmp(name, (*tracer)->contact->name) == 0) return 1;
+        if (strcmp(name, (*tracer)->contact->name) == 0) return 1;
 
         tracer = &(*tracer)->next;
     }
@@ -130,8 +127,6 @@ int contactNameExists(char *name) {
 }
 
 void addContact() {
-    pBuffer = realloc(pBuffer, sizeof(Variables) + ((variables->contactQuantity + 1) * sizeof(Contact)));
-
     printf("\nContact Name: ");
     scanf("%s", variables->name);
     getchar();
@@ -145,7 +140,14 @@ void addContact() {
     printf("Contact Number: ");
     scanf("%ld", &variables->number);
 
-    Contact *newContact = pBuffer + (sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact)));
+    Contact *newContact = (Contact*)malloc(sizeof(Contact));
+    // = pBuffer + (sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact)));
+
+     if (newContact == NULL) {
+        printf("Error in memory allocation!\n");
+
+        exit(0);
+    }
 
     strcpy(newContact->name, variables->name);
     newContact->number = variables->number;
@@ -158,52 +160,24 @@ void addContact() {
 }
 
 void deleteContact() {
+    DoublyLinkedListNode **tracer = &listHead;
+
     printf("\nWhat contact do you want to remove? ");
     scanf("%s", variables->name);
     getchar();
 
-    variables->j = 0;
-
-    for (variables->i = 0; variables->i < variables->contactQuantity; variables->i++) {
-        Contact *contact = pBuffer + (sizeof(Variables) + ((variables->i) * sizeof(Contact)));
-
-        if (variables->j == 1) {
-            variables->k = variables->i - 1;
-
-            Contact *personToDelete = pBuffer + (sizeof(Variables) + ((variables->k) * sizeof(Contact)));
-            
-            strcpy(personToDelete->name, contact->name);
-            personToDelete->number = contact->number;
-
-        } else if (strcmp(contact->name, variables->name) == 0) {
-            variables->j = 1;
-            popFromLinkedList(contact);
-        }
+    while (*tracer && (variables->isPresent = strcmp((*tracer)->contact->name, variables->name) != 0)) {
+        tracer = &(*tracer)->next;
     }
 
-    if (variables->j == 1) {
+    if (variables->isPresent == 0) {
+        popFromLinkedList((*tracer)->contact);
+
         printf("\nThe contact has been deleted!\n\n");
         
         variables->contactQuantity--;
-
-        pBuffer = realloc(pBuffer, (sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact))));
     } else 
         printf("\nName not found!\n\n");
-}
-
-void listContacts() {
-    if (variables->contactQuantity > 0) {
-        printf("\nYou have %d contacts in your agenda:\n\n", variables->contactQuantity);
-
-        for (variables->i = 0; variables->i < variables->contactQuantity; variables->i++) {
-            Contact *contact = pBuffer + (sizeof(Variables) + ((variables->i) * sizeof(Contact)));
-
-            printf("Name: %s - Number: %ld\n", contact->name, contact->number);
-        }
-    } else
-        printf("\nYou do not have any contact in your agenda.\n");
-    
-    printf("\n");
 }
 
 DoublyLinkedListNode* newDoublyLinkedListNode(Contact *contact) {
@@ -225,10 +199,15 @@ DoublyLinkedListNode* newDoublyLinkedListNode(Contact *contact) {
 };
 
 void pushToLinkedList(Contact *contact) {
+    DoublyLinkedListNode *node = newDoublyLinkedListNode(contact);
+
+    if (listHead == NULL) {
+        listHead = node;
+        return;
+    }
+
     DoublyLinkedListNode **tracer = &listHead;
     DoublyLinkedListNode **prev = NULL;
-
-    DoublyLinkedListNode *node = newDoublyLinkedListNode(contact);
 
     while (*tracer) {
         prev = tracer;
@@ -265,7 +244,7 @@ void popFromLinkedList(Contact *contact) {
 
     while ((*tracer) && (strcmp((*tracer)->contact->name, contact->name) != 0))
         tracer = &(*tracer)->next;
-
+    
     deleteLinkedListNode(*tracer);
 };
 
@@ -287,8 +266,20 @@ void printLinkedList() {
 
 PriorityQueueNode* newPriorityQueueNode(Contact *contact) {
     pBuffer = realloc(pBuffer, sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact)) + ((variables->queueQuantity + 1) * sizeof(PriorityQueueNode)));
+    
+    if (pBuffer == NULL) {
+        printf("Error in memory allocation!\n");
+
+        return 0;
+    }
 
     PriorityQueueNode *newNode = pBuffer + (sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact)) + ((variables->queueQuantity) * sizeof(PriorityQueueNode)));
+    
+    if (newNode == NULL) {
+        printf("Error in memory allocation!\n");
+
+        return 0;
+    }
 
     newNode->contact = contact;
     newNode->next = NULL;
@@ -335,6 +326,12 @@ void printQueue(PriorityQueueNode **queueHead) {
 
 void freeQueue() {
     pBuffer = realloc(pBuffer, sizeof(Variables) + ((variables->contactQuantity) * sizeof(Contact)));
+
+    if (pBuffer == NULL) {
+        printf("Error in memory allocation!\n");
+
+        exit(0);
+    }
 
     variables->queueQuantity = 0;
 };
